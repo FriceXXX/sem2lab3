@@ -9,6 +9,7 @@ from src.exceptions import (
     TaskAlreadyCompletedError,
     InvalidStateTransitionError
 )
+from src.task_q_lol import TaskQ
 
 
 def demonstrate_descriptors():
@@ -69,7 +70,7 @@ def demonstrate_properties():
 
 def demonstrate_state_transitions():
     print("\n\nDemonstrating state transitions" + "-" *60)
-    task = Task("TASK-003", "Реализовать конечный автомат задачи", priority=4)
+    task = Task("Реализовать коне(чный автомат задачи", priority=4)
 
     print(f"\nНачальное состояние: {task.status}")
     print(f"Активна: {task.is_active}")
@@ -97,26 +98,26 @@ def demonstrate_invariants():
     print("\n\nDemonstrating invariants" + "-" *60)
 
     try:
-        Task("", "Пустой ID", priority=3)
+        Task("Пустой ID", priority=3)
     except InvalidTaskIdError as e:
         print(f"{e}")
 
     try:
-        Task("TASK-005", "A" * 1001, priority=3)
+        Task("A" * 1001, priority=3)
     except InvalidDescriptionError as e:
         print(f"{e}")
 
     try:
-        Task("TASK-006", "Некорректный приоритет", priority=0)
+        Task("Некорректный приоритет", priority=0)
     except InvalidPriorityError as e:
         print(f"{e}")
 
     try:
-        Task("TASK-007", "Некорректный статус", status="invalid")
+        Task("Некорректный статус", status="invalid")
     except InvalidStatusError as e:
         print(f"{e}")
 
-    task = Task("TASK-008", "Тест переходов", priority=3)
+    task = Task("Тест переходов", priority=3)
 
     task.start()
     task.cancel()
@@ -128,8 +129,8 @@ def demonstrate_invariants():
 
 
 def demonstrate_non_data_descriptor():
-    task1 = Task("TASK-009", "Задача 1", priority=3)
-    task2 = Task("TASK-010", "Задача 2", priority=4)
+    task1 = Task("Задача 1", priority=3)
+    task2 = Task("Задача 2", priority=4)
 
     print(f"\n{task1.id}: is_active = {task1.is_active}")
     print(f"{task2.id}: is_active = {task2.is_active}")
@@ -145,16 +146,90 @@ def demonstrate_non_data_descriptor():
     print(f"  task1.__dict__: {task1.__dict__.get('is_active', 'не найдено')}")
     print(f"  task2.__dict__: {task2.__dict__.get('is_active', 'не найдено')}")
 
+def demonstrate_queue():
+    print("\n\nDemonstrating queue" + "-" *60)
+    queue = TaskQ()
+    print("\n Basic Iteration \n")
 
+    for i in range(5):
+        task = Task(f"{i}", priority=(i%5)+1)
+        queue.add_task(task)
+
+    print(queue)
+
+    print("\nFOR iteration:")
+    for task in queue:
+        print(task)
+
+    print("List: ", list(queue))
+
+
+def multiple_iterations():
+    print("\n\nMultiple iterations" + "-" *60)
+    queue = TaskQ()
+    for i in range(5):
+        task = Task(f"{i}", priority=(i%5)+1)
+        queue.add_task(task)
+
+    print(queue)
+
+    print("\nПервый обход:")
+    for task in queue:
+        print(f"  {task.id}")
+
+    print("\nВторой обход:")
+    for task in queue:
+        print(f"  {task.id}")
+
+    iter1 = iter(queue)
+    iter2 = iter(queue)
+    print()
+    print(f"  iter1: {next(iter1).id}")
+    print(f"  iter2: {next(iter2).id}")
+    print(f"  iter1: {next(iter1).id}")
+
+def demonstrate_lazy_filter():
+    print("\n\nDemonstrating lazy filter" + "-" *60)
+    queue = TaskQ()
+
+    tasks_data = [
+        ("Срочная задача", 5, "created"),
+        ("Обычная задача", 3, "created"),
+        ("Низкий приоритет", 1, "created"),
+        ("В работе", 4, "in_progress"),
+        ("Почти готова", 4, "in_progress"),
+        ("Завершена", 2, "completed"),
+        ("Отменена", 3, "cancelled"),
+    ]
+
+    for desc, prio, stats in tasks_data:
+        task = Task(description=desc, priority=prio, status=stats)
+        queue.add_task(task)
+
+    print("\nActive: \n")
+    active_tasks = queue.status_filter('in_progress')
+    for task in active_tasks:
+        print(f" {task.id}: {task.description}")
+
+    print("\nHigh priority: \n")
+    high_priority = queue.priority_filter(min_priority=4)
+    for task in high_priority:
+        print(f" {task.id}: приоритет {task.priority}")
+
+
+
+    print()
+    for task in queue:
+        print(task)
 
 if __name__ == "__main__":
     print("Demonstrating" + "-" *60)
 
     # demonstrate_descriptors()
-    # demonstrate_properties()
+    # # demonstrate_properties()
     # demonstrate_state_transitions()
     # demonstrate_invariants()
     # demonstrate_non_data_descriptor()
-
-    t1 = Task("Задача 1", priority=3)
-    print(t1.id, t1.description, t1.priority, t1.status, sep="\n")
+    # demonstrate_queue()
+    # multiple_iterations()
+    demonstrate_lazy_filter()

@@ -147,6 +147,13 @@ class Task:
             'new_value': new_value
         })
 
+    def __repr__(self) -> str:
+        return str({
+            'id': self.id,
+            'description': self.description,
+            'priority': self.priority,
+        })
+
 
 @runtime_checkable
 class TaskSource(Protocol):
