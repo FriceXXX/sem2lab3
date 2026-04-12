@@ -1,7 +1,8 @@
 from asyncio import tasks
 from typing import List, Iterator, Optional
 
-from task import Task
+from src.task_filters import TaskFilter
+from .task import Task
 
 
 class TaskQ:
@@ -25,6 +26,20 @@ class TaskQ:
                 removed = self._tasks.pop(i)
                 return removed
         return None
+
+    def filter(self, *filters: TaskFilter) -> Iterator[Task]:
+        if not filters:
+            yield from self._tasks
+            return
+
+        result = self._tasks
+        for filter_obj in filters:
+            result = filter_obj.apply(result)
+            if not result:
+                break
+
+        yield from result
+
 
     def get_task(self, task_id: str) -> Optional[Task]:
         for task in self._tasks:

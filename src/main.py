@@ -9,6 +9,7 @@ from src.exceptions import (
     TaskAlreadyCompletedError,
     InvalidStateTransitionError
 )
+from src.task_filters import ANDFilter, StatusFilter, PriorityFilter, ORFilter
 from src.task_q_lol import TaskQ
 
 
@@ -216,7 +217,42 @@ def demonstrate_lazy_filter():
     for task in high_priority:
         print(f" {task.id}: приоритет {task.priority}")
 
+def demonstrate_filter_classes():
+    print("\n\nDemonstrating filters 2" + "-" *60)
+    queue = TaskQ()
 
+    tasks_data = [
+        ("Срочная задача", 5, "created"),
+        ("Обычная задача", 3, "created"),
+        ("Низкий приоритет", 1, "created"),
+        ("В работе", 4, "in_progress"),
+        ("Почти готова", 4, "in_progress"),
+        ("Завершена", 2, "completed"),
+        ("Отменена", 3, "cancelled"),
+    ]
+
+    for desc, prio, stats in tasks_data:
+        task = Task(description=desc, priority=prio, status=stats)
+        queue.add_task(task)
+
+    print("\nAND фильтр (статус 'in_progress' И приоритет >= 4) ---")
+    and_filter = ANDFilter(
+        StatusFilter('in_progress'),
+        PriorityFilter(min_priority=4)
+    )
+
+
+    for task in queue.filter(and_filter):
+        print(task)
+
+    print("\nOR фильтр (статус 'in_progress' ИЛИ приоритет >= 4) ---")
+    or_filter = ORFilter(
+        StatusFilter('in_progress'),
+        PriorityFilter(min_priority=4)
+    )
+
+    for task in queue.filter(or_filter):
+        print(task)
 
     print()
     for task in queue:
@@ -233,3 +269,4 @@ if __name__ == "__main__":
     # demonstrate_queue()
     # multiple_iterations()
     demonstrate_lazy_filter()
+    demonstrate_filter_classes()
