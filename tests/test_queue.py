@@ -1,13 +1,13 @@
 import pytest
 from src.task import Task
-from src.task_q_lol import TaskQ
+from src.task_queue import TaskQueue
 from src.task_filters import StatusFilter, PriorityFilter, ANDFilter, ORFilter
 
-class TestQueue:
+class TestQueueTest:
     """Queue Tests"""
     @pytest.fixture
     def queue(self):
-        queue = TaskQ()
+        queue = TaskQueue()
         tasks = [
             Task("Task 1", priority=3, status="created"),
             Task("Task 2", priority=5, status="in_progress"),
@@ -19,7 +19,7 @@ class TestQueue:
         return queue
 
     def test_add_task(self):
-        queue = TaskQ()
+        queue = TaskQueue()
         task = Task("Test")
         queue.add_task(task)
 
@@ -27,7 +27,7 @@ class TestQueue:
         assert queue.get_task(task.id) == task
 
     def test_remove_task(self):
-        queue = TaskQ()
+        queue = TaskQueue()
         task = Task("Test")
         queue.add_task(task)
 
@@ -37,7 +37,7 @@ class TestQueue:
         assert queue.remove_task("NONEXISTENT") is None
 
     def test_get_task(self):
-        queue = TaskQ()
+        queue = TaskQueue()
         task = Task("Test")
         queue.add_task(task)
 
@@ -45,7 +45,7 @@ class TestQueue:
         assert queue.get_task("NONEXISTENT") is None
 
     def test_contains(self):
-        queue = TaskQ()
+        queue = TaskQueue()
         task = Task("Test")
         queue.add_task(task)
 
@@ -53,7 +53,7 @@ class TestQueue:
         assert "NONEXISTENT" not in queue
 
     def test_len(self):
-        queue = TaskQ()
+        queue = TaskQueue()
         assert len(queue) == 0
 
         queue.add_task(Task("Task 1"))
@@ -63,7 +63,7 @@ class TestQueue:
         assert len(queue) == 2
 
     def test_getitem(self):
-        queue = TaskQ()
+        queue = TaskQueue()
         task1 = Task("Task 1")
         task2 = Task("Task 2")
         queue.add_task(task1)
@@ -76,7 +76,7 @@ class TestQueue:
             _ = queue[2]
 
     def test_iteration(self):
-        queue = TaskQ()
+        queue = TaskQueue()
         task1 = Task("Task 1")
         task2 = Task("Task 2")
         task3 = Task("Task 3")
@@ -91,7 +91,7 @@ class TestQueue:
         assert result2 == [task1.description, task2.description, task3.description]
 
     def test_filter_by_status(self):
-        queue = TaskQ()
+        queue = TaskQueue()
         task1 = Task("Task 1", status="created")
         task2 = Task("Task 2", status="in_progress")
         task3 = Task("Task 3", status="completed")
@@ -108,7 +108,7 @@ class TestQueue:
         assert in_progress[0].id == task2.id
 
     def test_filter_by_priority(self):
-        queue = TaskQ()
+        queue = TaskQueue()
         queue.add_task(Task("Task 1", priority=1))
         queue.add_task(Task("Task 2", priority=3))
         queue.add_task(Task("Task 3", priority=5))
@@ -122,7 +122,7 @@ class TestQueue:
         assert medium[0].priority == 3
 
     def test_filter_active(self):
-        queue = TaskQ()
+        queue = TaskQueue()
         task1 = Task("Task 1", status="created")
         task2 = Task("Task 2", status="in_progress")
         task3 = Task("Task 3", status="completed")

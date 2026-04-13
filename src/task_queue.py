@@ -1,11 +1,10 @@
-from asyncio import tasks
 from typing import List, Iterator, Optional
 
 from src.task_filters import TaskFilter
 from .task import Task
 
 
-class TaskQ:
+class TaskQueue:
     def __init__(self, tasks: Optional[List[Task]] = None):
         self._tasks: List[Task] = []
 

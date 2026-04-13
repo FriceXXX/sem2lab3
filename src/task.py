@@ -142,7 +142,6 @@ class Task:
         self._history.append({
             'timestamp': datetime.now(),
             'field': field,
-            'field': field,
             'old_value': old_value,
             'new_value': new_value
         })
@@ -153,6 +152,20 @@ class Task:
             'description': self.description,
             'priority': self.priority,
         })
+
+    def __add__(self, other: 'Task') -> 'Task':
+        if not  isinstance(other, Task):
+            raise TypeError(f"Нельзя добавить Task к {type(other)}")
+
+        description = self.description + "\n" + other.description
+        priority = max(self.priority, other.priority)
+
+        return Task(description=description, priority=priority)
+
+    def __radd__(self, other) -> 'Task':
+        if other == 0:
+            return self
+        raise TypeError(f"Нельзя добавить {type(other)} к Task")
 
 
 @runtime_checkable

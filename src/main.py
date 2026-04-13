@@ -10,7 +10,7 @@ from src.exceptions import (
     InvalidStateTransitionError
 )
 from src.task_filters import ANDFilter, StatusFilter, PriorityFilter, ORFilter
-from src.task_q_lol import TaskQ
+from src.task_queue import TaskQueue
 
 
 def demonstrate_descriptors():
@@ -149,7 +149,7 @@ def demonstrate_non_data_descriptor():
 
 def demonstrate_queue():
     print("\n\nDemonstrating queue" + "-" *60)
-    queue = TaskQ()
+    queue = TaskQueue()
     print("\n Basic Iteration \n")
 
     for i in range(5):
@@ -167,7 +167,7 @@ def demonstrate_queue():
 
 def multiple_iterations():
     print("\n\nMultiple iterations" + "-" *60)
-    queue = TaskQ()
+    queue = TaskQueue()
     for i in range(5):
         task = Task(f"{i}", priority=(i%5)+1)
         queue.add_task(task)
@@ -191,7 +191,7 @@ def multiple_iterations():
 
 def demonstrate_lazy_filter():
     print("\n\nDemonstrating lazy filter" + "-" *60)
-    queue = TaskQ()
+    queue = TaskQueue()
 
     tasks_data = [
         ("Срочная задача", 5, "created"),
@@ -219,7 +219,7 @@ def demonstrate_lazy_filter():
 
 def demonstrate_filter_classes():
     print("\n\nDemonstrating filters 2" + "-" *60)
-    queue = TaskQ()
+    queue = TaskQueue()
 
     tasks_data = [
         ("Срочная задача", 5, "created"),
